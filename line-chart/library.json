@@ -1,0 +1,39 @@
+{
+  "title": "Line Chart",
+  "description": "Create Line charts",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 0,
+  "author": "hnq",
+  "license": "MIT",
+  "machineName": "H5P.LineChart",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 0
+  },
+  
+  "preloadedCss": [
+    {
+      "path": "chart.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "chart.js"
+    },
+    {
+      "path": "d3.js"
+    },
+    {
+      "path": "line.js"
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.ColorSelector",
+      "majorVersion": 1,
+      "minorVersion": 2
+    }
+  ]
+}

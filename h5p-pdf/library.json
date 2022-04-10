@@ -1,0 +1,21 @@
+{
+  "title": "Preview Pdf",
+  "description": "Displays a file pdf",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "hnq",
+  "license": "MIT",
+  "machineName": "H5P.PDF",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 0
+  },
+  "preloadedJs": [
+    { "path": "pdf.js" }
+  ],
+  "preloadedCss": [
+    { "path": "pdf.css" }
+  ]
+}
