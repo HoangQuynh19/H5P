@@ -1,4 +1,15 @@
-[
+[{
+  "name": "xAxis",
+  "type": "text",
+  "label": "Name xAxis",
+  "importance": "medium"
+  },
+  {
+  "name": "yAxis",
+  "type": "text",
+  "label": "Name yAxis",
+  "importance": "medium"
+  },
   {
     "name": "listOfTypes",
     "type": "list",
@@ -57,15 +68,12 @@
             "fields": [
               {
                 "name": "time",
-                "type": "Text",
+                "type": "text",
                 "label": "Time",
-                "importance": "low",
-                "default": 1,
-                "min": 0.0001,
-                "decimals": 4
+                "importance": "medium"
               },
               {
-                "name": "v",
+                "name": "value",
                 "type": "number",
                 "label": "Value",
                 "importance": "low",
