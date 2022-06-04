@@ -1,0 +1,39 @@
+{
+  "title": "Area Chart",
+  "description": "Create area charts",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 1,
+  "runnable": 1,
+  "author": "hnq",
+  "license": "MIT",
+  "machineName": "H5P.AreaChart",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 0
+  },
+  
+  "preloadedCss": [
+    {
+      "path": "chart.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "chart.js"
+    },
+    {
+      "path": "d3v7.js"
+    },
+    {
+      "path": "areaa.js"
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.ColorSelector",
+      "majorVersion": 1,
+      "minorVersion": 2
+    }
+  ]
+}

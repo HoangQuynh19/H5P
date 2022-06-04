@@ -1,0 +1,22 @@
+{
+  "name": "h5p-chart",
+  "version": "1.0.0",
+  "description": "H5P Chart ==========",
+  "main": "bar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/h5p/h5p-chart.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/h5p/h5p-chart/issues"
+  },
+  "homepage": "https://github.com/h5p/h5p-chart#readme",
+  "dependencies": {
+    "h5p": "^0.11.0"
+  }
+}

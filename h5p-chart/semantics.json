@@ -1,0 +1,27 @@
+[
+  {
+
+    "name": "graphMode",
+    "type": "library",
+    "label": "Type of chart",
+    "importance": "high",
+    "options": [
+      "H5P.PieChart 1.2",
+      "H5P.BarChart 1.2",
+      "H5P.BubbleChart 1.0",
+      "H5P.LineChart 1.0"
+     
+       
+    ],
+    "optional": true,
+    "description": "Optional media to display above the question."
+  },
+  {
+    "name": "figureDefinition",
+    "type": "text",
+    "label": "Text read by readspeakers defining the figure as a chart.",
+    "importance": "low",
+    "default": "Chart",
+    "common": true
+  }
+]

@@ -1,0 +1,102 @@
+[ 
+  {
+    "name": "xAxis",
+    "type": "text",
+    "label": "Name xAxis",
+    "importance": "medium"
+  },
+  {
+    "name": "yAxis",
+    "type": "text",
+    "label": "Name yAxis",
+    "importance": "medium"
+  },   
+  {
+    "name": "listOfTypes",
+    "type": "list",
+    "label": "Data elements",
+    "importance": "high",
+    "entity": "option",
+    "min": 1,
+    "defaultNum": 1,
+    "field": {
+      "name": "type",
+      "type": "group",
+      "label": "Data element",
+      "importance": "high",
+      "fields": [
+        {
+          "name": "text",
+          "type": "text",
+          "label": "Name",
+          "importance": "medium"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "label": "No.number",
+          "importance": "low",
+          "default": 1,
+          "min": 0.0001,
+          "decimals": 4
+        },
+        {
+          "name": "color",
+          "type": "text",
+          "widget": "colorSelector",
+          "label": "Color",
+          "importance": "low",
+          "default": "#000",
+          "optional": true,
+          "spectrum": {
+            "showInput": true,
+            "preferredFormat": "hex"
+          }
+        }, 
+        {
+          "name": "figures",
+          "type": "list",
+          "label": "Data",
+          "importance": "high",
+          "entity": "option",
+          "min": 1,
+          "defaultNum": 1,
+          "field":{
+            "name": "data",
+            "type": "group",
+            "label": "Data field",
+            "fields": [
+              {
+                "name": "time",
+                "type": "text",
+                "label": "Time",
+                "importance": "low",
+                "default": 1,
+                "min": 0.0001,
+                "decimals": 4
+              },
+              {
+                "name": "vlaue",
+                "type": "number",
+                "label": "Value",
+                "importance": "low",
+                "default": 1,
+                "min": 0.0001,
+                "decimals": 4
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "figureDefinition",
+    "type": "text",
+    "label": "Text read by readspeakers defining the figure as a chart.",
+    "importance": "low",
+    "default": "Chart",
+    "common": true
+  }
+]
+ 
