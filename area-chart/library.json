@@ -3,7 +3,7 @@
   "description": "Create area charts",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 1,
+  "patchVersion": 0,
   "runnable": 1,
   "author": "hnq",
   "license": "MIT",
@@ -26,14 +26,14 @@
       "path": "d3v7.js"
     },
     {
-      "path": "areaa.js"
+      "path": "area.js"
     }
   ],
   "editorDependencies": [
     {
       "machineName": "H5PEditor.ColorSelector",
       "majorVersion": 1,
-      "minorVersion": 2
+      "minorVersion": 3
     }
   ]
 }

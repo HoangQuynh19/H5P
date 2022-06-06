@@ -1,4 +1,4 @@
-[ 
+[
   {
     "name": "xAxis",
     "type": "text",
@@ -10,7 +10,29 @@
     "type": "text",
     "label": "Name yAxis",
     "importance": "medium"
-  },   
+  },
+  {
+    "name": "timeline",
+    "type": "list",
+    "label": "Timeline",
+    "importance": "high",
+    "entity": "option",
+    "min": 1,
+    "defaultNum": 1,
+    "field": {
+      "name": "data",
+      "type": "group",
+      "label": "Data field",
+      "fields": [
+        {
+          "name": "time",
+          "type": "text",
+          "label": "Time",
+          "importance": "medium"
+        }
+      ]
+    }
+  },
   {
     "name": "listOfTypes",
     "type": "list",
@@ -52,7 +74,7 @@
             "showInput": true,
             "preferredFormat": "hex"
           }
-        }, 
+        },
         {
           "name": "figures",
           "type": "list",
@@ -61,22 +83,13 @@
           "entity": "option",
           "min": 1,
           "defaultNum": 1,
-          "field":{
+          "field": {
             "name": "data",
             "type": "group",
             "label": "Data field",
             "fields": [
               {
-                "name": "time",
-                "type": "text",
-                "label": "Time",
-                "importance": "low",
-                "default": 1,
-                "min": 0.0001,
-                "decimals": 4
-              },
-              {
-                "name": "vlaue",
+                "name": "value",
                 "type": "number",
                 "label": "Value",
                 "importance": "low",
@@ -99,4 +112,3 @@
     "common": true
   }
 ]
- 

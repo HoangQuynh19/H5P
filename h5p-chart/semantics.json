@@ -9,7 +9,8 @@
       "H5P.PieChart 1.2",
       "H5P.BarChart 1.2",
       "H5P.BubbleChart 1.0",
-      "H5P.LineChart 1.0"
+      "H5P.LineChart 1.0",
+      "H5P.AreaChart 1.0"
      
        
     ],
