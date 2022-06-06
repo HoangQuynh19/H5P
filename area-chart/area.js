@@ -11,29 +11,10 @@ H5P.AreaChart.Area = (function () {
   function Area(params, $wrapper) {
     var self = this;
 
-    var dataSet = params.listOfTypes;
-    var nAxis = [params.xAxis, params.yAxis];
-    var namee = ["Tốc độ tăng trưởng (%)", "Năm"]
-    time = ['2016', '2018', '2020', '2022',];
-    preDataSet = [
-      {
-        name: " Hat đièu",
-        color: 'red',
-        figures: [50, 60, 70, 90, 80]
-      }
-      ,
-      {
-        name: "Cao su",
-        color: 'blue',
-        figures:
-          [150, 200, 100, 80, 90, 80]
-      },
-      {
-        name: "Cà phê",
-        color: 'pink',
-        figures: [700, 210, 120, 120]
-      }
-    ]
+    var preDataSet = params.listOfTypes;
+    var nAxis = [params.yAxis, params.xAxis];
+    time = params.timeline;
+
     console.log("****");
     console.log(preDataSet);
     console.log("****");
@@ -82,16 +63,18 @@ H5P.AreaChart.Area = (function () {
     }
 
     // exchanged coordinates
+
+    var min = nFigure
+    for (var k = 0; k < nElement; k++) {
+      if (min > preDataSet[k].figures.length) {
+        min = preDataSet[k].figures.length
+
+      }
+    }
     function calculate(preDataSet) {
       var dataSet = dataProcessing(preDataSet);
       console.log(dataSet);
-      var min = nFigure
-      for (var k = 0; k < nElement; k++) {
-        if (min > dataSet[k].figures.length) {
-          min = dataSet[k].figures.length
 
-        }
-      }
       for (var k = 0; k < nElement; k++) {
         var final = [];
 
@@ -136,6 +119,18 @@ H5P.AreaChart.Area = (function () {
     var dataProcessed = calculate(preDataSet);
     //   console.log(dataProcessed);
 
+    // Create Scale
+
+    var xScale = d3.scaleLinear().domain([0, nElement]);
+    var yDomain = 100;
+    var yScale = d3.scaleLinear().domain([0, yDomain]);
+
+    var xAxis = d3.axisBottom(xScale).ticks(nElement + 2).tickFormat(" ");
+    d3.selectAll(".tick line")
+      .attr("stroke-dasharray", "2,2");
+    var yAxis = d3.axisLeft(yScale);
+
+    var yAxisG = svg.append("g").attr("class", "y-axis");
 
 
     var area = [];
@@ -147,24 +142,14 @@ H5P.AreaChart.Area = (function () {
       texts[i] = svg.selectAll("textG").data(dataProcessed[i].exchanged).enter().append("text")
         .text(function (d) { return d.z + '%' });
     }
-
+    var xAxisG = svg.append("g").attr("class", "x-axis");
     var rects = svg.selectAll("rect").data(dataProcessed).enter().append('rect')
       .style('fill', d => d.color)
       .attr('width', 30).attr('height', 10)
-    // Create Scale
 
-    var xScale = d3.scaleOrdinal();
-    var yDomain = 100;
-    var yScale = d3.scaleLinear().domain([0, yDomain]);
-
-    var xAxis = d3.axisBottom(xScale).tickFormat("");;
-    var yAxis = d3.axisLeft(yScale);
-
-    var yAxisG = svg.append("g").attr("class", "y-axis");
-    var xAxisG = svg.append("g").attr("class", "x-axis");
     var numLabel = svg.selectAll("textGl").data(dataProcessed).enter().append("text")
       .attr('class', 'label').text(function (d) { return d.value });
-    var nameAxis = svg.selectAll('textAx').data(namee).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
+    var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
 
     var tick = svg.selectAll("tickFL").data(time).enter().append("text")
       .text(function (d) { return d });
@@ -192,9 +177,10 @@ H5P.AreaChart.Area = (function () {
       // Update SVG size
       svg.attr("width", w).attr("height", h);
 
-      xScale.range([0, width],);
+      xScale.rangeRound([0, width], 1);
       yScale.range([height, 0]);
-      xAxis.tickSize([tickSize]);
+      
+
       xAxisG.attr("transform", "translate(" + spaceY + "," + (height + lineHeight * 1.5) + ")")
         .call(xAxis);
       yAxisG.attr('transform', 'translate(' + spaceY + "," + lineHeight * 1.5 + ")").call(yAxis);
@@ -210,7 +196,16 @@ H5P.AreaChart.Area = (function () {
           .attr("transform", "translate(" + (spaceY + 1) + "," + (height + lineHeight * 1.5) + ")")
 
         texts[i].style('font-size', fontSize * 0.9)
-          .attr('x', function (d, i) { return spaceY + i * (scaleX - fontSize * 1.5) })
+          .attr('x', function (d, i) {
+            var last = 0.5;
+            if (i == min - 1) {
+              last = 1;
+            }
+            if (i == 0) {
+              last = 0
+            }
+            return spaceY + i * scaleX - last * fontSize * 3
+          })
           .attr('y', function (d) { return height + lineHeight * 2.2 - d.y * scaleY })
       }
 
