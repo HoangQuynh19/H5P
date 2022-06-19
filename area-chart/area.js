@@ -10,22 +10,18 @@ H5P.AreaChart.Area = (function () {
    */
   function Area(params, $wrapper) {
     var self = this;
-
+    // get data
     var preDataSet = params.listOfTypes;
     var nAxis = [params.yAxis, params.xAxis];
-    time = params.timeline;
+    groups = params.tickAxis;
 
-    console.log("****");
-    console.log(preDataSet);
-    console.log("****");
     // Create SVG element
     var svg = d3.select($wrapper[0]).append("svg");
-
     svg.append("desc").html("chart");
 
     // Processing Data
     var nElement = preDataSet.length;
-    var nFigure = time.length;
+    var nFigure = groups.length;
 
     function ratio(number1, number2) {
       result = 0;
@@ -48,7 +44,6 @@ H5P.AreaChart.Area = (function () {
       return sum;
     }
 
-
     function dataProcessing(preDataSet) {
       var preData = preDataSet
       var sum = sumFigures(preData);
@@ -62,100 +57,77 @@ H5P.AreaChart.Area = (function () {
       return preData;
     }
 
-    // exchanged coordinates
-
     var min = nFigure
     for (var k = 0; k < nElement; k++) {
       if (min > preDataSet[k].figures.length) {
         min = preDataSet[k].figures.length
-
       }
     }
+
     function calculate(preDataSet) {
       var dataSet = dataProcessing(preDataSet);
-      console.log(dataSet);
-
       for (var k = 0; k < nElement; k++) {
         var final = [];
-
         for (var i = 0; i < min; i++) {
           final[i] = 0;
         }
-
         for (var i = 0; i < min; i++) {
           for (var j = 0; j <= k; j++) {
-
-
             var t = dataSet[j].figures[i] - 0;
             final[i] += t;
           }
-
-
           if (k == nElement - 1) {
             final[i] = parseInt(final[i])
           }
           else
             final[i].toFixed(2);
-
         }
-
         dataSet[k].exchanged = exchange(final, dataSet[k].figures)
-
       }
-
       return dataSet;
     }
-
     function exchange(data, dataOld) {
       var exchanged = [];
-
       for (var i = 0; i < data.length; i++) {
         exchanged[i] = { x: (i), y: data[i].toFixed(2), z: dataOld[i] }
       }
-
       return exchanged;
     }
-
     var dataProcessed = calculate(preDataSet);
-    //   console.log(dataProcessed);
 
     // Create Scale
-
-    var xScale = d3.scaleLinear().domain([0, nElement]);
+    var xScale = d3.scalePoint()
+      .domain(groups)
+    var xAxis = d3.axisBottom(xScale)
     var yDomain = 100;
     var yScale = d3.scaleLinear().domain([0, yDomain]);
-
-    var xAxis = d3.axisBottom(xScale).ticks(nElement + 2).tickFormat(" ");
+ 
     d3.selectAll(".tick line")
       .attr("stroke-dasharray", "2,2");
     var yAxis = d3.axisLeft(yScale);
-
     var yAxisG = svg.append("g").attr("class", "y-axis");
-
-
+    // create element
     var area = [];
     var texts = [];
     var areas = []
     for (var i = nElement - 1; i >= 0; i--) {
       areas[i] = svg.append('path').datum(dataProcessed[i]);
-
       texts[i] = svg.selectAll("textG").data(dataProcessed[i].exchanged).enter().append("text")
         .text(function (d) { return d.z + '%' });
     }
+    // xAisG
     var xAxisG = svg.append("g").attr("class", "x-axis");
+
     var rects = svg.selectAll("rect").data(dataProcessed).enter().append('rect')
       .style('fill', d => d.color)
       .attr('width', 30).attr('height', 10)
-
     var numLabel = svg.selectAll("textGl").data(dataProcessed).enter().append("text")
       .attr('class', 'label').text(function (d) { return d.value });
     var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
-
-    var tick = svg.selectAll("tickFL").data(time).enter().append("text")
-      .text(function (d) { return d });
+   
     /**
-     * Fit the current bar chart to the size of the wrapper.
-     */
+   * Fit the current bar chart to the size of the wrapper.
+   */
     self.resize = function () {
       // Always scale to available space
       var style = window.getComputedStyle($wrapper[0]);
@@ -170,16 +142,12 @@ H5P.AreaChart.Area = (function () {
       var height = (h - spaceX) * 0.9; // Add space for labels below
       var width = (w - spaceY) * 0.8;
 
-      var scaleX = width / (nFigure - 1);
       var scaleY = height / yDomain;
-
 
       // Update SVG size
       svg.attr("width", w).attr("height", h);
-
-      xScale.rangeRound([0, width], 1);
+      xScale.range([0, width]);
       yScale.range([height, 0]);
-      
 
       xAxisG.attr("transform", "translate(" + spaceY + "," + (height + lineHeight * 1.5) + ")")
         .call(xAxis);
@@ -187,7 +155,7 @@ H5P.AreaChart.Area = (function () {
 
       for (var i = nElement - 1; i >= 0; i--) {
         area = d3.area()
-          .x(function (d) { return d.x * scaleX })
+          .x((d, i) => xScale(groups[i]))
           .y0(0)
           .y1(function (d) { return -d.y * scaleY })
 
@@ -204,7 +172,7 @@ H5P.AreaChart.Area = (function () {
             if (i == 0) {
               last = 0
             }
-            return spaceY + i * scaleX - last * fontSize * 3
+            return spaceY + xScale(groups[i]) - last * fontSize * 3
           })
           .attr('y', function (d) { return height + lineHeight * 2.2 - d.y * scaleY })
       }
@@ -213,8 +181,6 @@ H5P.AreaChart.Area = (function () {
       nameAxis.attr('x', function (d, i) { return i * (width + spaceY - fontSize * d.length / 2) })
         .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
 
-      tick.attr('x', function (d, i) { return spaceY - fontSize * d.length / 4 + i * scaleX })
-        .attr('y', height + lineHeight * 2.6)
       // Up date Note
       var spacing = 35;
       rects.attr('x', (spaceY + width + fontSize * 3))

@@ -12,9 +12,9 @@
     "importance": "medium"
   },
   {
-    "name": "timeline",
+    "name": "tickAxis",
     "type": "list",
-    "label": "Timeline",
+    "label": "Tick X-Axis ",
     "importance": "high",
     "entity": "option",
     "min": 1,
@@ -25,9 +25,9 @@
       "label": "Data field",
       "fields": [
         {
-          "name": "time",
+          "name": "tick",
           "type": "text",
-          "label": "Time",
+          "label": "tick",
           "importance": "medium"
         }
       ]

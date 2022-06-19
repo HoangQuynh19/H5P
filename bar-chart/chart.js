@@ -5,7 +5,7 @@
  * @external {jQuery} $ H5P.jQuery
  * @external {EventDispatcher} EventDispatcher H5P.EventDispatcher
  */
-H5P.BarChart = (function ($, EventDispatcher) {
+ H5P.BarChart = (function ($, EventDispatcher) {
 
   /**
    * Initialize module.
@@ -29,40 +29,15 @@ H5P.BarChart = (function ($, EventDispatcher) {
       self.params.listOfTypes = [];
     }
 
-    // Add example/default behavior
-    if (!self.params.listOfTypes.length) {
-      self.params.listOfTypes = [
-        {
-          text: 'Cat',
-          value: 1,
-          color: '#D3D3D3',
-          fontColor: '#000'
-        },
-        {
-          text: 'Dog',
-          value: 2,
-          color: '#ADD8E6',
-          fontColor: '#000'
-        },
-        {
-          text: 'Mouse',
-          value: 3,
-          color: '#90EE90',
-          fontColor: '#000'
-        }
-      ];
-    }
-
     // Set the figure definition for readspeakers if it doesn't exist
     if (!self.params.figureDefinition) {
-      self.params.figureDefinition = "Chart";
+      self.params.figureDefinition = "Note";
     }
-   // console.log(self.params.graphMode)
+
     // Keep track of type.
    
     self.type = ('Bar');
        
-
   }
 
   // Inheritance
@@ -74,7 +49,7 @@ H5P.BarChart = (function ($, EventDispatcher) {
    *
    * @param {Array} dataSet
    */
-   BarChart.filterData = function (dataSet) {
+  BarChart.filterData = function (dataSet) {
     // Cycle through data set
     for (var i = 0; i < dataSet.length; i++) {
       var row = dataSet[i];
@@ -101,11 +76,9 @@ H5P.BarChart = (function ($, EventDispatcher) {
    *
    * @param {H5P.jQuery} $container
    */
-   BarChart.prototype.attach = function ($container) {
+  BarChart.prototype.attach = function ($container) {
     var self = this;
 
-    
-    // Create chart on first attach
     if (self.$wrapper === undefined) {
       
       self.$wrapper = $('<div/>', {
@@ -117,22 +90,6 @@ H5P.BarChart = (function ($, EventDispatcher) {
 
     // Prepare container
     self.$container = $container.html('').addClass('h5p-chart').append(self.$wrapper);
-
-    const $defgroup = $('<div/>', {
-      'class': 'hidden-but-read',
-      'html': self.params.figureDefinition,
-    });
-
-    // Add aria-labels for the data
-    self.params.listOfTypes.forEach(function(type) {
-      var ariaLabel = $('<div/>', {
-        'class': 'hidden-but-read',
-        'html': type.text + ': ' + type.value + ''
-      });
-      $defgroup.append(ariaLabel);
-    });
-
-    self.$container.append($defgroup);
 
     // Handle resizing
     self.on('resize', function () {

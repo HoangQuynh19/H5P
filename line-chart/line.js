@@ -12,7 +12,7 @@ H5P.LineChart.Line = (function () {
     var self = this;
     var dataSet = params.listOfTypes;
     var nAxis = [params.yAxis, params.xAxis];
-    dataSet.timeLine = params.timeline;
+    dataSet.tickAxis = params.tickAxis;
 
     // Create SVG element
     var svg = d3.select($wrapper[0]).append("svg");
@@ -20,7 +20,7 @@ H5P.LineChart.Line = (function () {
     svg.append("desc").html("chart");
 
     // numberTick
-    var nTick = dataSet.timeLine.length
+    var nTick = dataSet.tickAxis.length
 
     // Processing Data
     var maxY = 0;
@@ -64,30 +64,39 @@ H5P.LineChart.Line = (function () {
     }
 
     // Create Scale
-    var yScale = d3.scale.linear();
-    var xScale = d3.scale.ordinal().domain(d3.range(nTick-2));
-
-    var yAxis = d3.svg.axis();
+    var yScale = d3.scaleLinear();
+    var xScale = d3.scalePoint()
+      .domain(dataSet.tickAxis)   
+    var xAxis = d3.axisBottom(xScale)
+    var yAxis = d3.axisLeft(yScale);
 
     var dataProcessed = dataProcessing(dataSet)
-    var xAxis = d3.svg.axis()
-      .scale(xScale)
-      .orient("bottom")
-      .tickFormat(" ");
-      
 
     var yAxisG = svg.append("g").attr("class", "y-axis");
     var xAxisG = svg.append("g").attr("class", "x-axis");
 
     var lines = [];
-
+    var dot = []
     //   var texts  = []; 
     for (var i = 0; i < dataProcessed.length; i++) {
       lines[i] = svg.selectAll("lineG").data(dataProcessed[i].exchanged).enter().append('line')
         .style('stroke', dataProcessed[i].color)
         .attr('stroke-width', 2);
+      var l = dataProcessed[i].exchanged.length
+      var dataDot = dataProcessed[i].exchanged
+      dataDot[l] = dataProcessed[i].exchanged[l - 1]
+      dot[i] = svg
+        .append("g")
+        .selectAll("dot")
+        .data(dataDot)
+        .enter()
+        .append("circle")
+        .attr("r", 4)
+        .attr("fill", dataProcessed[i].color)
+
 
     }
+    var text = svg.selectAll("textG").data(dataSet).enter().append("text").style("opacity", 0)
 
     var lineNote = svg.selectAll("lineN").data(dataProcessed).enter().append('line')
       .style('stroke', function (d) { return d.color })
@@ -95,8 +104,9 @@ H5P.LineChart.Line = (function () {
     var numLabel = svg.selectAll("textGl").data(dataProcessed).enter().append("text")
       .attr('class', 'label').text(function (d) { return d.value });
     var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
-    var tick = svg.selectAll("tickFL").data(dataProcessed.timeLine).enter().append("text")
+    var tick = svg.selectAll("tickFL").data(dataProcessed.tickAxis).enter().append("text")
       .text(function (d) { return d });
+    svg.selectAll('tick').attr('stroke-width', '0.5px')
 
     /**
      * Fit the current bar chart to the size of the wrapper.
@@ -115,38 +125,57 @@ H5P.LineChart.Line = (function () {
       var height = (h - spaceX) * 0.9; // Add space for labels below
       var width = (w - spaceY) * 0.85;
 
-      var yDomain = maxY + 50;
-      var scaleX = width / (nTick - 1);
+      var yDomain = (Math.floor(maxY / 10) + 5) * 10;
       var scaleY = height / yDomain;
 
       // Update SVG size
       svg.attr("width", w).attr("height", h);
 
       // Update scales
-      xScale.rangeRoundBands([0, width], 1);
+      xScale.range([0, width]);
       yScale.domain([0, yDomain]).range([height, 0]);
 
-      xAxis.tickSize([tickSize]).outerTickSize(0);
       xAxisG.attr('transform', 'translate(' + spaceY + ',' + (height + lineHeight * 1.5) + ')').call(xAxis);
 
-      yAxis.scale(yScale).orient("left").innerTickSize(-width).outerTickSize(0);
+    
       yAxisG.attr('transform', 'translate(' + spaceY + ',' + (lineHeight * 1.5) + ')').call(yAxis);
 
       //line
       for (var i = 0; i < dataProcessed.length; i++) {
+
         lines[i]
-          .attr('x1', function (d, i) { return d[0].x1 * scaleX + spaceY })
-          .attr('y1', function (d, i) { return height - d[0].y1 * scaleY + lineHeight * 1.5 })
-          .attr('x2', function (d, i) { return d[1].x2 * scaleX + spaceY })
-          .attr('y2', function (d, i) { return height - d[1].y2 * scaleY + lineHeight * 1.5 })
+          .attr('x1', (d, i) => spaceY + xScale(dataSet.tickAxis[i]))
+          .attr('y1', d => height - d[0].y1 * scaleY + lineHeight * 1.5)
+          .attr('x2', (d, i) => spaceY + xScale(dataSet.tickAxis[i + 1]))
+          .attr('y2', d => height - d[1].y2 * scaleY + lineHeight * 1.5)
+
+        dot[i].attr("cx", (d, i) => spaceY + xScale(dataSet.tickAxis[i]))
+          .attr("cy", (d, i) => {
+            if (i == nTick - 1) return height - d[1].y2 * scaleY + lineHeight * 1.5
+            else return height - d[0].y1 * scaleY + lineHeight * 1.5
+          }
+          ).on("mousemove", (event, d) => {
+            var coords = d3.pointer(event, svg.node());
+            var t = `${d[0].y1.toFixed(2)}%`
+            text
+              .text(t)
+              .attr("x", coords[0] + 10)
+              .attr("y", coords[1] - 5)
+              .style("opacity", 1)
+          })
+          .on("mouseleave", function (d) {
+            text
+              .style("opacity", 0)
+          })
+
       }
-      
+
       // label axis 
-      nameAxis.attr('x', function (d, i) { return i * (width + spaceY -fontSize * d.length / 2) })
+      nameAxis.attr('x', function (d, i) { return i * (width + spaceY - fontSize * d.length / 2) })
         .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
       // tick
-      tick.attr('x', function (d, i) { return spaceY - fontSize * d.length / 4 + i*scaleX })
-        .attr('y', height + lineHeight * 2.6)
+      // tick.attr('x', function (d, i) { return spaceY - fontSize * d.length / 4 + i * scaleX })
+      //   .attr('y', height + lineHeight * 2.6)
       // Note
       var spacing = 25;
       lineNote.attr('x1', (spaceY + width + spacing))

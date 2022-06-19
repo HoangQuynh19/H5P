@@ -3,7 +3,7 @@
   "description": "Create bubble charts",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 1,
+  "patchVersion": 2,
   "runnable": 0,
   "author": "hnq",
   "license": "MIT",
@@ -23,7 +23,7 @@
       "path": "chart.js"
     },
     {
-      "path": "d3.js"
+      "path": "d3v7.js"
     },
     {
       "path": "bubble.js"

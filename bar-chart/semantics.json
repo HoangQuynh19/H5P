@@ -1,12 +1,46 @@
 [
   {
+    "name": "xAxis",
+    "type": "text",
+    "label": "Name xAxis",
+    "importance": "medium"
+  },
+  {
+    "name": "yAxis",
+    "type": "text",
+    "label": "Name yAxis",
+    "importance": "medium"
+  },
+  {
+    "name": "tickAxis",
+    "type": "list",
+    "label": "Tick X-Axis ",
+    "importance": "high",
+    "entity": "option",
+    "min": 1,
+    "defaultNum": 1,
+    "field": {
+      "name": "data",
+      "type": "group",
+      "label": "Data field",
+      "fields": [
+        {
+          "name": "tick",
+          "type": "text",
+          "label": "tick",
+          "importance": "medium"
+        }
+      ]
+    }
+  },
+  {
     "name": "listOfTypes",
     "type": "list",
     "label": "Data elements",
     "importance": "high",
     "entity": "option",
     "min": 1,
-    "defaultNum": 2,
+    "defaultNum": 1,
     "field": {
       "name": "type",
       "type": "group",
@@ -22,7 +56,7 @@
         {
           "name": "value",
           "type": "number",
-          "label": "Value",
+          "label": "No.number",
           "importance": "low",
           "default": 1,
           "min": 0.0001,
@@ -42,16 +76,28 @@
           }
         },
         {
-          "name": "fontColor",
-          "type": "text",
-          "widget": "colorSelector",
-          "label": "Font Color",
-          "importance": "low",
-          "default": "#fff",
-          "optional": true,
-          "spectrum": {
-            "showInput": true,
-            "preferredFormat": "hex"
+          "name": "figures",
+          "type": "list",
+          "label": "Data",
+          "importance": "high",
+          "entity": "option",
+          "min": 1,
+          "defaultNum": 1,
+          "field": {
+            "name": "data",
+            "type": "group",
+            "label": "Data field",
+            "fields": [
+              {
+                "name": "value",
+                "type": "number",
+                "label": "Value",
+                "importance": "low",
+                "default": 1,
+                "min": 0.0001,
+                "decimals": 4
+              }
+            ]
           }
         }
       ]

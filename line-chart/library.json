@@ -3,7 +3,7 @@
   "description": "Create Line charts",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 0,
+  "patchVersion": 2,
   "runnable": 1,
   "author": "hnq",
   "license": "MIT",
@@ -23,7 +23,7 @@
       "path": "chart.js"
     },
     {
-      "path": "d3.js"
+      "path": "d3v7.js"
     },
     {
       "path": "line.js"

@@ -12,7 +12,7 @@ H5P.BubbleChart.Bubble = (function () {
     var self = this;
 
     var dataSet = params.listOfTypes;
-    var nAxis = [params.xAxis, params.yAxis];
+    var nAxis = [params.yAxis, params.xAxis];
 
     // Create SVG element
     var svg = d3.select($wrapper[0]).append("svg");
@@ -35,33 +35,27 @@ H5P.BubbleChart.Bubble = (function () {
       if (x > maxX) { maxX = x; }
     }
 
-    var yScale = d3.scale.linear();
-    var xScale = d3.scale.linear();
+    var yScale = d3.scaleLinear();
+    var xScale = d3.scaleLinear();
 
-    var xAxis = d3.svg.axis();
-    var yAxis = d3.svg.axis();
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale);
 
     var xAxisG = svg.append("g").attr("class", "x-axis");
     var yAxisG = svg.append("g").attr("class", "y-axis");
 
     var circles = [];
-    var dots = [];
-    var texts = [];
-
+  
     for (var i = 0; i < dataSet.length; i++) {
       circles[i] = svg.selectAll("circleG").data(dataSet[i].figures).enter().append('circle')
         .style('fill', hexToRgbA(dataSet[i].color));
 
-      dots[i] = svg.selectAll("dots").data(dataSet[i].figures).enter().append('circle')
-        .attr('fill', dataSet[i].color)
-        
-      texts[i] = svg.selectAll("textG").data(dataSet[i].figures).enter().append("text")
-        .text(function (d) { return "(" + d.x + "," + d.y + "," + d.r + ")" });
     }
 
     var rects = svg.selectAll("rect").data(dataSet).enter().append('rect')
       .style('fill', function (d) { return hexToRgbA(d.color) })
       .attr('width', 30).attr('height', 10)
+    var text = svg.selectAll("textG").data(dataSet).enter().append("text").style("opacity", 0)
 
     var numLabel = svg.selectAll("textGl").data(dataSet).enter().append("text").attr('class', 'label').text(function (d) { return d.value });
     var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
@@ -95,7 +89,7 @@ H5P.BubbleChart.Bubble = (function () {
 
       // size of axis chart
       var height = (h - spaceX) * 0.9; // Add space for labels below
-      var width = (w - spaceY) * 0.8;
+      var width = (w - spaceY) * 0.85;
       // radius
       var scaleR = height / 150;
       // Domain axis
@@ -134,27 +128,36 @@ H5P.BubbleChart.Bubble = (function () {
       // Update scales
       xScale.domain([0, xDomain]).range([0, width]);
       yScale.domain([0, yDomain]).range([height, 0]);
-      // Orient axis
-      xAxis.scale(xScale).orient("bottom").innerTickSize(-height).outerTickSize(0);
-      yAxis.scale(yScale).orient("left").innerTickSize(-width).outerTickSize(0);
+
       // Axis
       xAxisG.attr('transform', 'translate(' + spaceY + ',' + (height + lineHeight * 1.5) + ')').call(xAxis);
       yAxisG.attr('transform', 'translate(' + spaceY + ',' + (lineHeight * 1.5) + ')').call(yAxis);
       // label axis
-      nameAxis.attr('x', function (d, i) { return i * (width + spaceY) })
-        .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
-      // Circle + texts
+      nameAxis.attr('x', (d, i) => i * ((width + spaceY - fontSize * d.length / 2)))
+        .attr('y', (d, i) => i * (height + lineHeight * 2.5) + lineHeight)
+      // Circle + text
       for (var i = 0; i < dataSet.length; i++) {
         for (var j = 0; j < dataSet[i].figures.length; j++) {
 
-          circles[i].attr('cx', function (d) { return spaceY + unitX * (d.x) })
-            .attr('cy', function (d) { return height + lineHeight * 1.5 - unitY * d.y })
-            .attr('r', function (d) { return scaleR * d.r });
-          texts[i].style('font-size', fontSize * 0.9).attr('x', function (d) { return spaceY + unitX * (d.x) - fontSize * 2 })
-            .attr('y', function (d) { return height - unitY * d.y + lineHeight })
-          dots[i].attr('cx', function (d) { return spaceY + unitX * (d.x) })
-            .attr('cy', function (d) { return height + lineHeight * 1.5 - unitY * d.y })
-            .attr('r', 2);
+          circles[i].attr('cx', d => spaceY + unitX * (d.x))
+            .attr('cy', d => height + lineHeight * 1.5 - unitY * d.y)
+            .attr('r', d => scaleR * d.r)
+            .attr("stroke", "black")
+            .attr("stroke-width", "0.5px")
+            .on("mousemove", (event, d) => {
+              var coords = d3.pointer(event, svg.node());
+              var t = `(${d.x}, ${d.y}, ${d.r})`
+              text
+                .text(t)
+                .attr("x", coords[0] + 10)
+                .attr("y", coords[1] - 5)
+                .style("opacity", 1)
+            })
+            .on("mouseleave", function (d) {
+              text
+                .style("opacity", 0)
+            })
+
         }
       }
       // Up date Note
