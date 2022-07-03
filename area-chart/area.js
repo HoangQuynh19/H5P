@@ -139,7 +139,7 @@ H5P.AreaChart.Area = (function () {
       var spaceX = tickSize + 1.5 * lineHeight;
       var spaceY = tickSize + lineHeight + 40;
 
-      var height = (h - spaceX) * 0.9; // Add space for labels below
+      var height = (h - spaceX) * 0.85; // Add space for labels below
       var width = (w - spaceY) * 0.8;
 
       var scaleY = height / yDomain;
@@ -149,9 +149,9 @@ H5P.AreaChart.Area = (function () {
       xScale.range([0, width]);
       yScale.range([height, 0]);
 
-      xAxisG.attr("transform", "translate(" + spaceY + "," + (height + lineHeight * 1.5) + ")")
+      xAxisG.attr("transform", "translate(" + spaceY + "," + (height*1.05 + lineHeight * 1.5) + ")")
         .call(xAxis);
-      yAxisG.attr('transform', 'translate(' + spaceY + "," + lineHeight * 1.5 + ")").call(yAxis);
+      yAxisG.attr('transform', 'translate(' + spaceY + "," + (lineHeight * 1.5 + height*0.05) + ")").call(yAxis);
 
       for (var i = nElement - 1; i >= 0; i--) {
         area = d3.area()
@@ -161,7 +161,7 @@ H5P.AreaChart.Area = (function () {
 
         areas[i].attr('d', d => area(d.exchanged))
           .attr('fill', d => d.color)
-          .attr("transform", "translate(" + (spaceY + 1) + "," + (height + lineHeight * 1.5) + ")")
+          .attr("transform", "translate(" + (spaceY + 1) + "," + (height*1.05 + lineHeight * 1.5) + ")")
 
         texts[i].style('font-size', fontSize * 0.9)
           .attr('x', function (d, i) {
@@ -174,12 +174,12 @@ H5P.AreaChart.Area = (function () {
             }
             return spaceY + xScale(groups[i]) - last * fontSize * 3
           })
-          .attr('y', function (d) { return height + lineHeight * 2.2 - d.y * scaleY })
+          .attr('y', function (d) { return height*1.05 + lineHeight * 2.2 - d.y * scaleY })
       }
 
       // label axis 
       nameAxis.attr('x', function (d, i) { return i * (width + spaceY - fontSize * d.length / 2) })
-        .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
+        .attr('y', function (d, i) { return i * (height*1.07 + lineHeight * 2.5) + lineHeight })
 
       // Up date Note
       var spacing = 35;

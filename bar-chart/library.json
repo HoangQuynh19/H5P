@@ -2,8 +2,8 @@
   "title": " Bar Chart",
   "description": "Create different charts",
   "majorVersion": 1,
-  "minorVersion": 2,
-  "patchVersion": 23,
+  "minorVersion": 3,
+  "patchVersion": 0,
   "runnable": 0,
   "author": "Joubel",
   "license": "MIT",
@@ -17,7 +17,7 @@
   ],
   "preloadedCss": [
     {
-      "path": "chartt.css"
+      "path": "charttt.css"
     }
   ],
   "preloadedJs": [

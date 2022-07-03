@@ -66,7 +66,7 @@ H5P.LineChart.Line = (function () {
     // Create Scale
     var yScale = d3.scaleLinear();
     var xScale = d3.scalePoint()
-      .domain(dataSet.tickAxis)   
+      .domain(dataSet.tickAxis)
     var xAxis = d3.axisBottom(xScale)
     var yAxis = d3.axisLeft(yScale);
 
@@ -74,7 +74,11 @@ H5P.LineChart.Line = (function () {
 
     var yAxisG = svg.append("g").attr("class", "y-axis");
     var xAxisG = svg.append("g").attr("class", "x-axis");
-
+    var box = svg.selectAll("box").data(dataSet).enter().append("rect")
+      .attr('rx', 5)
+      .attr('ry', 5)
+      .attr("style", "fill:rgba(192,192,192,0.3);stroke:black;stroke-width:1")
+      .style("opacity", 0)
     var lines = [];
     var dot = []
     //   var texts  = []; 
@@ -91,11 +95,12 @@ H5P.LineChart.Line = (function () {
         .data(dataDot)
         .enter()
         .append("circle")
-        .attr("r", 4)
+        .attr("r", 3)
         .attr("fill", dataProcessed[i].color)
 
 
     }
+
     var text = svg.selectAll("textG").data(dataSet).enter().append("text").style("opacity", 0)
 
     var lineNote = svg.selectAll("lineN").data(dataProcessed).enter().append('line')
@@ -104,9 +109,8 @@ H5P.LineChart.Line = (function () {
     var numLabel = svg.selectAll("textGl").data(dataProcessed).enter().append("text")
       .attr('class', 'label').text(function (d) { return d.value });
     var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
-    var tick = svg.selectAll("tickFL").data(dataProcessed.tickAxis).enter().append("text")
-      .text(function (d) { return d });
-    svg.selectAll('tick').attr('stroke-width', '0.5px')
+
+
 
     /**
      * Fit the current bar chart to the size of the wrapper.
@@ -122,7 +126,7 @@ H5P.LineChart.Line = (function () {
       var spaceX = tickSize + 1.5 * lineHeight;
       var spaceY = tickSize + lineHeight + 40;
 
-      var height = (h - spaceX) * 0.9; // Add space for labels below
+      var height = (h - spaceX) * 0.85; // Add space for labels below
       var width = (w - spaceY) * 0.85;
 
       var yDomain = (Math.floor(maxY / 10) + 5) * 10;
@@ -133,55 +137,62 @@ H5P.LineChart.Line = (function () {
 
       // Update scales
       xScale.range([0, width]);
-      yScale.domain([0, yDomain]).range([height, 0]);
+      yScale.domain([0, yDomain]).range([height, 0])
+      yAxis.tickSizeInner(-width);
 
-      xAxisG.attr('transform', 'translate(' + spaceY + ',' + (height + lineHeight * 1.5) + ')').call(xAxis);
+      xAxisG.attr('transform', 'translate(' + spaceY + ',' + (height*1.05 + lineHeight * 1.5) + ')').call(xAxis);
 
-    
-      yAxisG.attr('transform', 'translate(' + spaceY + ',' + (lineHeight * 1.5) + ')').call(yAxis);
+
+      yAxisG.attr('transform', 'translate(' + spaceY + ',' + (lineHeight * 1.5 + height*0.05) + ')').call(yAxis);
 
       //line
       for (var i = 0; i < dataProcessed.length; i++) {
 
         lines[i]
           .attr('x1', (d, i) => spaceY + xScale(dataSet.tickAxis[i]))
-          .attr('y1', d => height - d[0].y1 * scaleY + lineHeight * 1.5)
+          .attr('y1', d => height*1.05 - d[0].y1 * scaleY + lineHeight * 1.5)
           .attr('x2', (d, i) => spaceY + xScale(dataSet.tickAxis[i + 1]))
-          .attr('y2', d => height - d[1].y2 * scaleY + lineHeight * 1.5)
+          .attr('y2', d => height*1.05 - d[1].y2 * scaleY + lineHeight * 1.5)
 
         dot[i].attr("cx", (d, i) => spaceY + xScale(dataSet.tickAxis[i]))
           .attr("cy", (d, i) => {
-            if (i == nTick - 1) return height - d[1].y2 * scaleY + lineHeight * 1.5
-            else return height - d[0].y1 * scaleY + lineHeight * 1.5
+            if (i == nTick - 1) return height*1.05 - d[1].y2 * scaleY + lineHeight * 1.5
+            else return height*1.05 - d[0].y1 * scaleY + lineHeight * 1.5
           }
           ).on("mousemove", (event, d) => {
             var coords = d3.pointer(event, svg.node());
             var t = `${d[0].y1.toFixed(2)}%`
+            box.attr('x', coords[0] + 5)
+              .attr('y', coords[1] - lineHeight * 1.6 )
+              .attr('width', fontSize * t.length * 0.7).attr('height', lineHeight * 2)
+            box.style("opacity", 1)
+            .style("display", "block")
             text
               .text(t)
               .attr("x", coords[0] + 10)
               .attr("y", coords[1] - 5)
               .style("opacity", 1)
+              .style("display", "block")
           })
           .on("mouseleave", function (d) {
-            text
-              .style("opacity", 0)
+            text.style("opacity", 0)
+            .style("display", "none")
+            box.style("opacity", 0)
+            .style("display", "none")
           })
 
       }
 
       // label axis 
       nameAxis.attr('x', function (d, i) { return i * (width + spaceY - fontSize * d.length / 2) })
-        .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
-      // tick
-      // tick.attr('x', function (d, i) { return spaceY - fontSize * d.length / 4 + i * scaleX })
-      //   .attr('y', height + lineHeight * 2.6)
+        .attr('y', function (d, i) { return i * (height*1.08 + lineHeight * 2.5) + lineHeight })
+
       // Note
       var spacing = 25;
       lineNote.attr('x1', (spaceY + width + spacing))
         .attr('y1', function (d, i) { return i * spacing + lineHeight })
         .attr('x2', spaceY + width + spacing * 3)
-        .attr('y2', function (d, i) { return i * spacing + lineHeight });
+        .attr('y2', function (d, i) { return i * spacing + lineHeight  });
       numLabel.attr('x', (spaceY + width + spacing - fontSize))
         .attr('y', function (d, i) { return i * spacing + lineHeight * 1.25 })
     }

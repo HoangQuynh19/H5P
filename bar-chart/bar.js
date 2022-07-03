@@ -38,7 +38,7 @@ H5P.BarChart.Bar = (function () {
         sum[i] = 0;
       }
       for (d of dataSet) {
-        for (var i = 0; i < subgroups.length; i++) {
+        for (var i = 0; i < groups.length; i++) {
           sum[i] += d.figures[i]
 
         }
@@ -46,16 +46,7 @@ H5P.BarChart.Bar = (function () {
       return sum;
     }
 
-    // x Axis
-    const xScale = d3.scaleBand();
-    xScale.domain(groups).padding([0.2])
-    var xAxisG = svg.append("g").attr("class", "x-axis");
-    // y Axis
-    var max = d3.max(sumFigures(dataSet))
-    var yDomain = (Math.floor(max / 10) + 1) * 10;
-    const yScale = d3.scaleLinear().domain([0, yDomain]);
-    var yAxis = d3.axisLeft(yScale);
-    var yAxisG = svg.append("g").attr("class", "y-axis");
+
     // Color Bar
     const color = d3.scaleOrdinal()
       .domain(subgroups)
@@ -69,27 +60,37 @@ H5P.BarChart.Bar = (function () {
       .data(stackedData)
       .join("g")
       .attr("fill", d => color(d.key))
-      .attr("class", d => "myRect " + d.key)
+      .attr("class", (d,i) => "myRect a" + i)
       .selectAll("rect")
       .data(d => d)
       .join("rect").attr("id", "bar")
+    var box = svg.selectAll("box").data(dataSet).enter().append("rect")
+      .attr('rx', 5)
+      .attr('ry', 5)
+      .attr("style", "fill:white;stroke:black;stroke-width:1.5")
+      .style("opacity", 0)
     var text = svg.selectAll("textG").data(dataSet).enter().append("text").style("opacity", 0)
 
     // Action mouse 
     const mouseover = function (event, d) {
-      const subGroupName = d3.select(this.parentNode).datum().key
+      debugger
+      const subGroupName = d3.select(this.parentNode).datum().index
       d3.selectAll(".myRect").style("opacity", 0.2)
-      d3.selectAll("." + subGroupName).style("opacity", 1)
-      text
-        .style("opacity", 1)
+      d3.selectAll(".a" + subGroupName).style("opacity", 1)
+      box.style("opacity", 1)
+     // 
+      text.style("opacity", 1)
+     // 
     }
 
     const mouseleave = function (event, d) {
       d3.selectAll(".myRect")
         .style("opacity", 1)
-
-      text
+      box.style("display", "none").style("opacity", 0)
+      
+      text.style("display", "none")
         .style("opacity", 0)
+        
     }
     // Note
     var rects = svg.selectAll("rectN").data(dataSet).enter().append('rect')
@@ -99,7 +100,16 @@ H5P.BarChart.Bar = (function () {
       .attr('class', 'label').text(function (d) { return d.value });
     // Name Axis
     var nameAxis = svg.selectAll('textAx').data(nAxis).enter().append('text').attr('class', 'label-axis').text(function (d) { return d });
-
+    // x Axis
+    const xScale = d3.scaleBand();
+    xScale.domain(groups).padding([0.2])
+    var xAxisG = svg.append("g").attr("class", "x-axis");
+    // y Axis
+    var max = d3.max(sumFigures(dataSet))
+    var yDomain = (Math.floor(max / 10) + 1) * 10;
+    const yScale = d3.scaleLinear().domain([0, yDomain]);
+    var yAxis = d3.axisLeft(yScale);
+    var yAxisG = svg.append("g").attr("class", "y-axis");
 
 
     /**
@@ -116,8 +126,8 @@ H5P.BarChart.Bar = (function () {
       var spaceX = tickSize + 1.5 * lineHeight;
       var spaceY = tickSize + lineHeight + 40;
 
-      var height = (h - spaceX) * 0.9; // Add space for labels below
-      var width = (w - spaceY) * 0.8;
+      var height = (h - spaceX) *0.7; // Add space for labels below
+      var width = (w - spaceY) * 0.7;
 
       // Update SVG size
       svg.attr("width", w).attr("height", h);
@@ -125,12 +135,14 @@ H5P.BarChart.Bar = (function () {
       xScale.range([0, width])
       yScale.range([height, 0]);
       // Axis
-      xAxisG.attr("transform", `translate(${spaceY}, ${height + lineHeight * 1.5})`)
-        .call(d3.axisBottom(xScale).tickSizeOuter(0));
-      yAxisG.attr("transform", `translate(${spaceY}, ${lineHeight * 1.5})`).call(yAxis);
+      xAxisG.attr("transform", `translate(${spaceY}, ${height*1.05 + lineHeight * 1.5})`)
+        .call(d3.axisBottom(xScale).tickSizeOuter(0)).selectAll("text")
+        .attr("transform", "translate(-10,5)rotate(-45)")
+        .style("text-anchor", "end")
+      yAxisG.attr("transform", `translate(${spaceY}, ${lineHeight * 1.5 + height*0.05})`).call(yAxis);
       // Bar
       svg.selectAll('#bar').attr("x", d => spaceY + xScale(d.data.group))
-        .attr("y", d => (lineHeight * 1.5 + yScale(d[1])))
+        .attr("y", d => (lineHeight * 1.5 + yScale(d[1])+ height*0.05))
         .attr("height", d => yScale(d[0]) - yScale(d[1]))
         .attr("width", xScale.bandwidth())
         .attr("stroke", "grey")
@@ -139,16 +151,21 @@ H5P.BarChart.Bar = (function () {
         .on("mousemove", (event, d) => {
           var coords = d3.pointer(event, svg.node());
           var t = d[1] - d[0]
+          box.attr('x', coords[0] + 5)
+            .attr('y', coords[1] - lineHeight * 1.6)
+            .attr('width', fontSize * `Value: ${t}`.length * 0.7).attr('height', lineHeight * 2)
+            .style("display", "block")
+            
           text
-            .text(`value: ${t}`)
-            .attr("x", coords[0] + 5)
+            .text(`Value: ${t}`)
+            .attr("x", coords[0] + fontSize)
             .attr("y", coords[1] - 5)
-            .style("opacity", 1)
+            .style("display", "block")
         })
 
       // Name Axis
-      nameAxis.attr('x', function (d, i) { return i * (width + spaceY - fontSize * d.length / 2) })
-        .attr('y', function (d, i) { return i * (height + lineHeight * 2.5) + lineHeight })
+      nameAxis.attr('x', function (d, i) { return i * (width + spaceY ) })
+        .attr('y', function (d, i) { return i * (height*1.06 + lineHeight * 1.5) + lineHeight })
       // Up date Note
       var spacing = 35;
       rects.attr('x', (spaceY + width + fontSize * 3))

@@ -3,7 +3,7 @@
   "description": "Create Line charts",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 2,
+  "patchVersion": 3,
   "runnable": 1,
   "author": "hnq",
   "license": "MIT",
@@ -15,7 +15,7 @@
   
   "preloadedCss": [
     {
-      "path": "chart.css"
+      "path": "chartt.css"
     }
   ],
   "preloadedJs": [

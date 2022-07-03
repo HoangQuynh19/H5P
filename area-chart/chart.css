@@ -19,13 +19,3 @@
   height: 100%;
 }
 
-.h5p-chart-area .domain {
-  fill: rgb(255, 255, 255,0);
-  stroke: rgb(7, 7, 7);
-  stroke-width: 0.125em;
-}
-.h5p-chart-area .tick {
- 
-  stroke: rgba(7, 7, 7, 0.5);
-  
-}
